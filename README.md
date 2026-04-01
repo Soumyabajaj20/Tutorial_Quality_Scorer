@@ -1,6 +1,4 @@
 # Tutorial Quality Scorer
-### WnCC Convenor Assignment 2026-27 — Question 3
-
 ---
 
 ## Project Structure
@@ -11,7 +9,6 @@ tutorial_scorer/
 ├── model.py                ← Feature engineering + Random Forest + evaluation
 ├── tutorials.csv           ← Generated synthetic dataset (200 rows)
 ├── top10_tutorials.csv     ← Top 10 tutorials by predicted quality score
-├── feature_importance.png  ← Bar chart of feature importances
 └── requirements.txt        ← Python dependencies
 ```
 
@@ -42,7 +39,6 @@ python model.py
 This produces:
 - Console output with RMSE, R², feature importances, top 10 tutorials
 - `top10_tutorials.csv`
-- `feature_importance.png`
 
 ---
 
