@@ -8,10 +8,6 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 
-# ─────────────────────────────────────────────
-# 1. LOAD DATA
-# ─────────────────────────────────────────────
-
 def load_data(path="tutorials.csv") -> pd.DataFrame:
     df = pd.read_csv(path)
     print(f"Loaded {len(df)} tutorials from {path}")
@@ -27,12 +23,10 @@ CLICKBAIT_PATTERNS = [
 def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
 
-    # Avoid division by zero
     df["View_Count"]  = df["View_Count"].replace(0, 1)
     df["Like_Count"]  = df["Like_Count"].fillna(0)
     df["Comment_Count"] = df["Comment_Count"].fillna(0)
 
-    # Ratio features
     df["Like_Rate"]       = df["Like_Count"]    / df["View_Count"]
     df["Comment_Rate"]    = df["Comment_Count"] / df["View_Count"]
     df["Engagement_Rate"] = (df["Like_Count"] + df["Comment_Count"]) / df["View_Count"]
@@ -43,11 +37,9 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
 
     df["Is_Clickbait"] = df["Video_Title"].apply(is_clickbait)
 
-    # Title and description signals
     df["Title_Word_Count"]    = df["Video_Title"].apply(lambda t: len(str(t).split()))
     df["Description_Length"]  = df["Video_Description"].apply(lambda d: len(str(d)))
 
-    # Subscriber efficiency
     df["Subs_Per_View"] = df["Channel_Subscriber_Count"] / df["View_Count"]
 
     print("Feature engineering complete.")
@@ -66,7 +58,7 @@ FEATURE_COLS = [
     "Title_Word_Count",
     "Description_Length",
     "Subs_Per_View",
-    "View_Count",           # kept as a scale signal
+    "View_Count",           
     "Channel_Subscriber_Count",
 ]
 
@@ -80,7 +72,6 @@ def train_model(df: pd.DataFrame):
     X = df[FEATURE_COLS]
     y = df[TARGET_COL]
 
-    # 80/20 split, fixed random_state for reproducibility
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42
     )
@@ -126,16 +117,6 @@ def analyze_feature_importance(model, feature_cols: list):
     print(  "  This feature is the strongest predictor of tutorial quality.")
     print(  "  A low value here (e.g. low Like_Rate or Is_Clickbait=1)")
     print(  "  is the clearest signal that a tutorial is bad.")
-
-    fig, ax = plt.subplots(figsize=(9, 5))
-    colors = ["#e74c3c" if f == top_feature else "#3498db" for f in feat_df["Feature"]]
-    ax.barh(feat_df["Feature"][::-1], feat_df["Importance"][::-1], color=colors[::-1])
-    ax.set_xlabel("Importance Score")
-    ax.set_title("Random Forest Feature Importance\n(red = top predictor)")
-    ax.tick_params(axis="y", labelsize=9)
-    plt.tight_layout()
-    plt.savefig("feature_importance.png", dpi=120)
-    print("\n✓ Saved feature_importance.png")
 
     return feat_df
 
